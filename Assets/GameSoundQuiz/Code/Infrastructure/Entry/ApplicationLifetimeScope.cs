@@ -1,5 +1,6 @@
 using System;
 using GameSoundQuiz.Services.LoadingCurtain;
+using GameSoundQuiz.Services.Multiplayer;
 using GameSoundQuiz.Services.Sound;
 using UnityEngine;
 using VContainer;
@@ -12,6 +13,7 @@ namespace GameSoundQuiz.Infrastructure.Entry
     {
         [SerializeField] private SoundService _soundService;
         [SerializeField] private LoadingCurtain _loadingCurtain;
+        [SerializeField] private MultiplayerService _multiplayerService;
 
         protected override void Configure(IContainerBuilder builder)
         {
@@ -33,6 +35,7 @@ namespace GameSoundQuiz.Infrastructure.Entry
         {
             builder.RegisterComponent(_soundService).AsImplementedInterfaces();
             builder.RegisterComponent(_loadingCurtain).AsImplementedInterfaces();
+            builder.RegisterComponent(_multiplayerService).AsImplementedInterfaces();
         }
 
         private static void RegisterServices(IContainerBuilder builder)

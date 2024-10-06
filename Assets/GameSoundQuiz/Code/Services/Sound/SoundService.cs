@@ -10,12 +10,12 @@ namespace GameSoundQuiz.Services.Sound
 {
     public class SoundService : MonoBehaviour, ISoundService, ICoroutineRunner
     {
-        public bool IsSoundMuted
+        public bool IsSoundEnabled
         {
             get => _effectsSource.mute;
             set
             {
-                _effectsSource.mute = _musicSource.mute = !value;
+                AudioListener.volume = value ? 1f : 0f;
                 _saveLoad.Progress.Settings.IsSoundEnabled = value;
             }
         }
@@ -33,7 +33,7 @@ namespace GameSoundQuiz.Services.Sound
             _saveLoad = saveLoad;
             _sounds = soundData.AudioEffectClips.ToDictionary(s => s.Id);
             _musicSource.clip = soundData.BackgroundMusic;
-            IsSoundMuted = _saveLoad.Progress.Settings.IsSoundEnabled;
+            IsSoundEnabled = _saveLoad.Progress.Settings.IsSoundEnabled;
         }
 
         public void PlayBackgroundMusic() => _musicSource.Play();

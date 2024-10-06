@@ -6,7 +6,7 @@ namespace GameSoundQuiz.Services.Sound
 {
     public interface ISoundService
     {
-        bool IsSoundMuted { get; set; }
+        bool IsSoundEnabled { get; set; }
         float Volume { get; }
         void Construct(ISaveLoad saveLoad, SoundData soundData);
         void PlayBackgroundMusic();

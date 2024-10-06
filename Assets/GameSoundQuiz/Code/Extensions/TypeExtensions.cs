@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+
 using GameSoundQuiz.Infrastructure.StateMachine.States;
 using GameSoundQuiz.Services;
-using GameSoundQuiz.Services.Factories.BaseFactory;
 
 namespace GameSoundQuiz.Extensions
 {
@@ -23,8 +23,7 @@ namespace GameSoundQuiz.Extensions
             foreach (Type serviceType in serviceTypes)
             {
                 Type instanceType = serviceType;
-                Type interfaceType = serviceType.GetInterfaces()
-                    .First(type => type != typeof(IGlobalService) && type != typeof(IBaseFactory));
+                Type interfaceType = serviceType.GetInterfaces().First(type => type != typeof(IGlobalService));
                 services.Add((instanceType, interfaceType));
             }
 

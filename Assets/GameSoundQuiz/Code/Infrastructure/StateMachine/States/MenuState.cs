@@ -1,62 +1,64 @@
 using GameSoundQuiz.Core.UI;
 using GameSoundQuiz.Core.UI.MainMenu;
-using GameSoundQuiz.Services.EntityContainer;
-using GameSoundQuiz.Services.Factories.UIFactory;
 using GameSoundQuiz.Services.LoadingCurtain;
 using GameSoundQuiz.Services.SceneLoader;
-using UnityEngine;
+using GameSoundQuiz.Services.Windows;
 
 namespace GameSoundQuiz.Infrastructure.StateMachine.States
 {
     public class MenuState : IState
     {
-        private readonly IGameStateMachine _stateMachine;
-        private readonly IUIFactory _uiFactory;
-        private readonly ISceneLoader _sceneLoader;
-        private readonly IEntityContainer _entityContainer;
-        private readonly ILoadingCurtain _loadingCurtain;
-
-        private MainMenu _mainMenu;
-        private TopPanel _topPanel;
         private const string MenuScene = "Menu";
+        
+        private readonly IApplicationStateMachine _stateMachine;
+        private readonly ILoadingCurtain _loadingCurtain;
+        private readonly IWindowsService _windowsService;
+        private readonly ISceneLoader _sceneLoader;
 
-        public MenuState(IGameStateMachine stateMachine, IUIFactory uiFactory,
-            ISceneLoader sceneLoader, IEntityContainer entityContainer, ILoadingCurtain loadingCurtain)
+        private MainMenuScreen _mainMenuScreen;
+        private HeaderView _headerView;
+
+        public MenuState(
+            IApplicationStateMachine stateMachine,
+            ILoadingCurtain loadingCurtain,
+            IWindowsService windowsService,
+            ISceneLoader sceneLoader)
         {
             _stateMachine = stateMachine;
-            _uiFactory = uiFactory;
-            _sceneLoader = sceneLoader;
-            _entityContainer = entityContainer;
             _loadingCurtain = loadingCurtain;
+            _windowsService = windowsService;
+            _sceneLoader = sceneLoader;
         }
 
-        public void Enter() => _sceneLoader.LoadScene(MenuScene, PrepareMenu);
+        public void Enter() => _sceneLoader.LoadScene(MenuScene, EnableMenu);
 
-        public void Exit()
+        private void EnableMenu()
         {
-            _mainMenu.OnPlayClick.RemoveListener(LoadGame);
-        }
-
-        private void PrepareMenu()
-        {
-            CreateMenuElements();
+            GetViews();
             Subscribe();
+            
+            _headerView.Show();
+            _headerView.ToggleBackButton(false);
+
             _loadingCurtain.Hide();
         }
 
-        private void CreateMenuElements()
+        public void Exit()
         {
-            GameObject rootCanvas = _uiFactory.CreateRootCanvas();
-            _topPanel = _entityContainer.GetEntity<TopPanel>();
-            _topPanel.ToggleMainMenuStateView();
-            _mainMenu = _uiFactory.InstantiateAsRegistered<MainMenu>(rootCanvas.transform);
+            _mainMenuScreen.OnRoomsClick.RemoveListener(SwitchToRoomList);
         }
 
         private void Subscribe()
         {
-            _mainMenu.OnPlayClick.AddListener(LoadGame);
+            _mainMenuScreen.OnRoomsClick.AddListener(SwitchToRoomList);
         }
 
-        private void LoadGame() => _stateMachine.Enter<LoadGameState>();
+        private void GetViews()
+        {
+            _mainMenuScreen = _windowsService.GetWindow<MainMenuScreen>();
+            _headerView = _windowsService.GetWindow<HeaderView>();
+        }
+
+        private void SwitchToRoomList() => _stateMachine.Enter<RoomState>();
     }
 }

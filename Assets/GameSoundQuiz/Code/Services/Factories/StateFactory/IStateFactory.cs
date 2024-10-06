@@ -1,4 +1,4 @@
-namespace GameSoundQuiz.Services.Factories.StateFactory
+namespace GameSoundQuiz.Services.StateFactory
 {
     public interface IStateFactory : IGlobalService
     {

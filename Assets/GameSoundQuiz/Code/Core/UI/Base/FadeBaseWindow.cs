@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace GameSoundQuiz.Core.UI.Base
 {
-    public abstract class FadeBaseWindow : MonoBehaviour
+    public abstract class FadeBaseWindow : BaseWindow
     {
         [SerializeField] private CanvasGroup _canvasGroup;
         [SerializeField] private float _fadeSpeed;
@@ -17,14 +17,14 @@ namespace GameSoundQuiz.Core.UI.Base
             gameObject.SetActive(false);
         }
         
-        public virtual void Show()
+        public override void Show()
         {
             gameObject.SetActive(true);
             if (_fadeTween != null) return;
             _fadeTween = _canvasGroup.DOFade(1, _fadeSpeed).OnComplete(StopFadeTween);
         }
 
-        public virtual void Hide()
+        public override void Hide()
         {
             if (_fadeTween != null) return;
             _fadeTween = _canvasGroup.DOFade(0, _fadeSpeed)

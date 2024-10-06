@@ -1,67 +1,72 @@
 using GameSoundQuiz.Core.UI;
-using GameSoundQuiz.Services.Factories.GameFactory;
-using GameSoundQuiz.Services.Factories.UIFactory;
+using GameSoundQuiz.Core.UI.Settings;
 using GameSoundQuiz.Services.LoadingCurtain;
+using GameSoundQuiz.Services.Multiplayer;
 using GameSoundQuiz.Services.SaveLoad;
 using GameSoundQuiz.Services.Sound;
 using GameSoundQuiz.Services.StaticData;
-using UnityEngine;
+using GameSoundQuiz.Services.Windows;
+using GameSoundQuiz.Services.WindowsFactory;
 
 namespace GameSoundQuiz.Infrastructure.StateMachine.States
 {
     public class LoadApplicationState : IState
     {
-        private readonly IGameStateMachine _gameStateMachine;
+        private readonly IApplicationStateMachine _applicationStateMachine;
+        private readonly IMultiplayerConnection _multiplayerConnection;
+        private readonly IWindowsService _windowsService;
+        private readonly IWindowsFactory _windowsFactory;
+        private readonly ILoadingCurtain _loadingCurtain;
+        private readonly ISoundService _soundService;
         private readonly IStaticData _staticData;
         private readonly ISaveLoad _saveLoad;
-        private readonly IGameFactory _gameFactory;
-        private readonly IUIFactory _uiFactory;
-        private readonly ISoundService _soundService;
-        private readonly ILoadingCurtain _loadingCurtain;
 
-        public LoadApplicationState(IGameStateMachine gameStateMachine, IStaticData staticData, ISaveLoad saveLoad,
-            IGameFactory gameFactory, IUIFactory uiFactory, ISoundService soundService, ILoadingCurtain loadingCurtain)
+        public LoadApplicationState(
+            IApplicationStateMachine applicationStateMachine,
+            IMultiplayerConnection multiplayerConnection,
+            IWindowsService windowsService,
+            IWindowsFactory windowsFactory,
+            ILoadingCurtain loadingCurtain,
+            ISoundService soundService,
+            IStaticData staticData,
+            ISaveLoad saveLoad)
         {
-            _staticData = staticData;
-            _saveLoad = saveLoad;
-            _gameFactory = gameFactory;
-            _uiFactory = uiFactory;
-            _soundService = soundService;
+            _applicationStateMachine = applicationStateMachine;
+            _multiplayerConnection = multiplayerConnection;
+            _windowsService = windowsService;
             _loadingCurtain = loadingCurtain;
-            _gameStateMachine = gameStateMachine;
+            _soundService = soundService;
+            _staticData = staticData;
+            _windowsFactory = windowsFactory;
+            _saveLoad = saveLoad;
         }
         
         public void Enter()
         {
             _saveLoad.Load();
             _soundService.Construct(_saveLoad, _staticData.SoundData);
-            CreatePersistentEntities();
-            _gameStateMachine.Enter<MenuState>();
+            
+            CreatePersistentWindows();
+
+            _multiplayerConnection.OnConnectingSuccess += SwitchToAuthState;
+            _multiplayerConnection.Connect();
         }
 
         public void Exit()
         {
+            _multiplayerConnection.OnConnectingSuccess -= SwitchToAuthState;
         }
 
-        private void CreatePersistentEntities()
-        {
-            GameObject persistentCanvas = CreatePersistentCanvas();
-            _uiFactory.CreateSettingsPanel(persistentCanvas.transform);
-            TopPanel topPanel = _uiFactory.CreateTopPanel(persistentCanvas.transform);
-            topPanel.SetBackAction(() =>
-            {
-                _loadingCurtain.Show();
-                _gameStateMachine.Enter<MenuState>();
-            });
-        }
+        private void SwitchToAuthState() => _applicationStateMachine.Enter<MenuState>();
 
-        private GameObject CreatePersistentCanvas()
+        private void CreatePersistentWindows()
         {
-            GameObject persistentCanvas = _uiFactory.CreateRootCanvas();
-            persistentCanvas.GetComponent<Canvas>().sortingOrder = 10;
-            persistentCanvas.name = "PersistentCanvas";
-            Object.DontDestroyOnLoad(persistentCanvas);
-            return persistentCanvas;
+            _windowsFactory.CreatePersistentCanvas();
+
+            SettingsView settingsView = _windowsService.AddPersistentWindow<SettingsView>();
+            HeaderView headerView = _windowsService.AddPersistentWindow<HeaderView>();
+
+            headerView.OnSettingsClick += settingsView.Toggle;
         }
     }
 }

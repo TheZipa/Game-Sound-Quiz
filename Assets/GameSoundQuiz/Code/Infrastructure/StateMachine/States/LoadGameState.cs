@@ -1,32 +1,28 @@
-using GameSoundQuiz.Core.UI;
-using GameSoundQuiz.Services.EntityContainer;
-using GameSoundQuiz.Services.Factories.GameFactory;
-using GameSoundQuiz.Services.Factories.UIFactory;
 using GameSoundQuiz.Services.LoadingCurtain;
 using GameSoundQuiz.Services.SceneLoader;
+using GameSoundQuiz.Services.WindowsFactory;
 using UnityEngine;
 
 namespace GameSoundQuiz.Infrastructure.StateMachine.States
 {
     public class LoadGameState : IState
     {
-        private readonly IGameStateMachine _gameStateMachine;
-        private readonly IUIFactory _uiFactory;
-        private readonly IGameFactory _gameFactory;
-        private readonly IEntityContainer _entityContainer;
+        private readonly IApplicationStateMachine _applicationStateMachine;
+        private readonly IWindowsFactory _windowsFactory;
         private readonly ISceneLoader _sceneLoader;
         private readonly ILoadingCurtain _loadingCurtain;
         private const string GameScene = "Game";
 
-        public LoadGameState(IGameStateMachine gameStateMachine, IUIFactory uiFactory, IGameFactory gameFactory,
-            IEntityContainer entityContainer, ISceneLoader sceneLoader, ILoadingCurtain loadingCurtain)
+        public LoadGameState(
+            IApplicationStateMachine applicationStateMachine,
+            ILoadingCurtain loadingCurtain,
+            ISceneLoader sceneLoader,
+            IWindowsFactory windowsFactory)
         {
-            _gameStateMachine = gameStateMachine;
-            _uiFactory = uiFactory;
-            _gameFactory = gameFactory;
-            _entityContainer = entityContainer;
-            _sceneLoader = sceneLoader;
+            _applicationStateMachine = applicationStateMachine;
             _loadingCurtain = loadingCurtain;
+            _sceneLoader = sceneLoader;
+            _windowsFactory = windowsFactory;
         }
 
         public void Enter()
@@ -48,8 +44,7 @@ namespace GameSoundQuiz.Infrastructure.StateMachine.States
 
         private void InitializeUI()
         {
-            GameObject rootCanvas = _uiFactory.CreateRootCanvas();
-            _entityContainer.GetEntity<TopPanel>().ToggleGameplayStateView();
+            GameObject rootCanvas = _windowsFactory.CreateCanvas();
         }
 
         private void InitializeGameplay()
@@ -57,6 +52,6 @@ namespace GameSoundQuiz.Infrastructure.StateMachine.States
             
         }
 
-        private void FinishLoad() => _gameStateMachine.Enter<GameplayState>();
+        private void FinishLoad() => _applicationStateMachine.Enter<GameplayState>();
     }
 }

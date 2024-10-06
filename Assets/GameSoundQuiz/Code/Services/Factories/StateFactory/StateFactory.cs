@@ -4,14 +4,14 @@ using GameSoundQuiz.Infrastructure.StateMachine;
 using GameSoundQuiz.Infrastructure.StateMachine.States;
 using VContainer;
 
-namespace GameSoundQuiz.Services.Factories.StateFactory
+namespace GameSoundQuiz.Services.StateFactory
 {
     public class StateFactory : IStateFactory
     {
         private readonly IObjectResolver _objectResolver;
-        private readonly IGameStateMachine _stateMachine;
+        private readonly IApplicationStateMachine _stateMachine;
 
-        public StateFactory(IObjectResolver objectResolver, IGameStateMachine stateMachine)
+        public StateFactory(IObjectResolver objectResolver, IApplicationStateMachine stateMachine)
         {
             _objectResolver = objectResolver;
             _stateMachine = stateMachine;
