@@ -10,12 +10,14 @@ namespace GameSoundQuiz.Services.Windows
     public class WindowsService : IWindowsService
     {
         private readonly Dictionary<Type, BaseWindow> _windows;
+        private readonly Queue<Type> _removeWindowsQueue;
         private readonly IWindowsFactory _windowsFactory;
         
         public WindowsService(IWindowsFactory windowsFactory)
         {
             _windowsFactory = windowsFactory;
             _windows = new Dictionary<Type, BaseWindow>(8);
+            _removeWindowsQueue = new Queue<Type>(4);
         }
 
         public TWindow AddPersistentWindow<TWindow>() where TWindow : BaseWindow
@@ -46,10 +48,18 @@ namespace GameSoundQuiz.Services.Windows
             foreach (KeyValuePair<Type, BaseWindow> windowPair in _windows)
             {
                 if(windowPair.Value.IsPersistent) continue;
-                
-                _windows.Remove(windowPair.Key);
-                Object.Destroy(windowPair.Value);
+                _removeWindowsQueue.Enqueue(windowPair.Key);
             }
+
+            while (_removeWindowsQueue.Count > 0)
+            {
+                Type removeWindowType = _removeWindowsQueue.Dequeue();
+                BaseWindow removeWindow = _windows[removeWindowType];
+                Object.Destroy(removeWindow);
+                _windows.Remove(removeWindowType);
+            }
+            
+            _windowsFactory.Clear();
         }
     }
 }

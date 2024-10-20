@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: Assets/GameSoundQuiz/Scenes/Initial.unity
     guid: 9ac1076842716426aa70c49d574162cd
   - enabled: 1
+    path: Assets/GameSoundQuiz/Scenes/Auth.unity
+    guid: 40bc8e03a674fb14b9ed528983502467
+  - enabled: 1
     path: Assets/GameSoundQuiz/Scenes/Menu.unity
     guid: 2524488b3534f4beb8f363210d69db83
   - enabled: 1

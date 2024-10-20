@@ -46,6 +46,12 @@ namespace GameSoundQuiz.Services.WindowsFactory
             _persistentCanvas.name = "PersistentCanvas";
             Object.DontDestroyOnLoad(_persistentCanvas);
         }
+        
+        public void Clear()
+        {
+            if(_sceneCanvas is not null) Object.Destroy(_sceneCanvas);
+            _sceneCanvas = null;
+        }
 
         private TWindow CreateWindow<TWindow>(Transform canvas) where TWindow : BaseWindow
         {

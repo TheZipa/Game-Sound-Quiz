@@ -16,7 +16,6 @@ namespace GameSoundQuiz.Infrastructure.StateMachine.States
         private readonly IMultiplayerConnection _multiplayerConnection;
         private readonly IWindowsService _windowsService;
         private readonly IWindowsFactory _windowsFactory;
-        private readonly ILoadingCurtain _loadingCurtain;
         private readonly ISoundService _soundService;
         private readonly IStaticData _staticData;
         private readonly ISaveLoad _saveLoad;
@@ -26,7 +25,6 @@ namespace GameSoundQuiz.Infrastructure.StateMachine.States
             IMultiplayerConnection multiplayerConnection,
             IWindowsService windowsService,
             IWindowsFactory windowsFactory,
-            ILoadingCurtain loadingCurtain,
             ISoundService soundService,
             IStaticData staticData,
             ISaveLoad saveLoad)
@@ -34,7 +32,6 @@ namespace GameSoundQuiz.Infrastructure.StateMachine.States
             _applicationStateMachine = applicationStateMachine;
             _multiplayerConnection = multiplayerConnection;
             _windowsService = windowsService;
-            _loadingCurtain = loadingCurtain;
             _soundService = soundService;
             _staticData = staticData;
             _windowsFactory = windowsFactory;
@@ -57,7 +54,7 @@ namespace GameSoundQuiz.Infrastructure.StateMachine.States
             _multiplayerConnection.OnConnectingSuccess -= SwitchToAuthState;
         }
 
-        private void SwitchToAuthState() => _applicationStateMachine.Enter<MenuState>();
+        private void SwitchToAuthState() => _applicationStateMachine.Enter<AuthState>();
 
         private void CreatePersistentWindows()
         {

@@ -16,6 +16,14 @@ namespace GameSoundQuiz.Data.Progress
         }
 
         private int _balance;
+        
+        public string Name 
+        { 
+            get => _name;
+            set { _name = value; OnPropertyChanged?.Invoke(); }
+        }
+
+        private string _name;
 
         public UserProgress()
         {
