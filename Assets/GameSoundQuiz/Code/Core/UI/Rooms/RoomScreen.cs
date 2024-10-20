@@ -62,10 +62,17 @@ namespace GameSoundQuiz.Core.UI.Rooms
         public void SetupRoom()
         {
             foreach (PhotonPlayer player in _multiplayerRooms.GetPlayersInRoom()) AddPlayerToRoom(player);
-            SetVisibleStartButton();
+            SetVisibleMasterButtons();
         }
         
-        private void SetVisibleStartButton() => _startGameButton.gameObject.SetActive(_multiplayerRooms.IsMasterPlayer());
+        private void SetVisibleMasterButtons()
+        {
+            bool isMasterPlayer = _multiplayerRooms.IsMasterPlayer();
+            
+            _startGameButton.gameObject.SetActive(isMasterPlayer);
+            foreach (RoomPlayerField roomPlayerField in _roomPlayerFields.Values)
+                roomPlayerField.SetVisibleAdditionalMenuButton(isMasterPlayer);
+        }
 
         private void TryStartGame()
         {
@@ -101,14 +108,17 @@ namespace GameSoundQuiz.Core.UI.Rooms
         private void SetMasterPlayer(PhotonPlayer player)
         {
             if (_masterPlayer is not null) AddPlayerField(player);
+            if (_roomPlayerFields.ContainsKey(player.NickName)) RemovePlayerFromRoom(player);
+
             _masterPlayer = player;
             _masterUserName.text = _masterPlayer.NickName;
-            SetVisibleStartButton();
+            
+            SetVisibleMasterButtons();
         }
 
         private void CloseAdditionalRemoveForAllField(RoomPlayerField sender)
         {
-            foreach (RoomPlayerField roomPlayerField in _fields)
+            foreach (RoomPlayerField roomPlayerField in _roomPlayerFields.Values)
             {
                 if(roomPlayerField == sender) continue;
                 roomPlayerField.HideAdditionalMenu();

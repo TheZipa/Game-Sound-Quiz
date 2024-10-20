@@ -29,6 +29,9 @@ namespace GameSoundQuiz.Core.UI.Rooms
             Show();
         }
 
+        public void SetVisibleAdditionalMenuButton(bool isVisible) =>
+            _additionalMenuButton.gameObject.SetActive(isVisible);
+
         public void HideAdditionalMenu() => _additionalMenuView.SetActive(false);
 
         private void ToggleAdditionalMenu()
