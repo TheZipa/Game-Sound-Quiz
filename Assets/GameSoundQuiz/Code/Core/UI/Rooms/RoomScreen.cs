@@ -107,7 +107,7 @@ namespace GameSoundQuiz.Core.UI.Rooms
 
         private void SetMasterPlayer(PhotonPlayer player)
         {
-            if (_masterPlayer is not null) AddPlayerField(player);
+            if (_masterPlayer is not null) AddPlayerField(_masterPlayer);
             if (_roomPlayerFields.ContainsKey(player.NickName)) RemovePlayerFromRoom(player);
 
             _masterPlayer = player;

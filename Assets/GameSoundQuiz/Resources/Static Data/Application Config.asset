@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Application Config
   m_EditorClassIdentifier: 
   MaxPlayersInLobby: 12
-  MinPlayersInLobby: 1
+  MinPlayersInLobby: 4
