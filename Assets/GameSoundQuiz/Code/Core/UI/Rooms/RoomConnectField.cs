@@ -21,6 +21,8 @@ namespace GameSoundQuiz.Core.UI.Rooms
         public void UpdateRoomData(RoomInfo roomInfo)
         {
             bool isRoomFulled = roomInfo.PlayerCount == roomInfo.MaxPlayers;
+            if(roomInfo.PlayerCount is 0) Hide();
+            
             _roomInfo = roomInfo;
             _roomName.text = roomInfo.Name;
             _roomPlayersCount.color = isRoomFulled ? Color.red : Color.green;

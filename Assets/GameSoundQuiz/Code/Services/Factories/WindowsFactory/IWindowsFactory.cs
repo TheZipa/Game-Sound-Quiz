@@ -10,5 +10,6 @@ namespace GameSoundQuiz.Services.WindowsFactory
         TWindow CreatePersistentWindow<TWindow>() where TWindow : BaseWindow;
         TWindow CreateSceneWindow<TWindow>() where TWindow : BaseWindow;
         void Clear();
+        TWindow CreateWindow<TWindow>(Transform parent) where TWindow : BaseWindow;
     }
 }

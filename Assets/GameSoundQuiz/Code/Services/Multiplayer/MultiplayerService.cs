@@ -57,7 +57,7 @@ namespace GameSoundQuiz.Services.Multiplayer
 
         public int GetCurrentPlayerId() => PhotonNetwork.LocalPlayer.ActorNumber;
 
-        public void LeaveRoom() => PhotonNetwork.LeaveRoom();
+        public void LeaveRoom() => PhotonNetwork.LeaveRoom(false);
 
         public void SendEvent(byte eventCode) => PhotonNetwork
             .RaiseEvent(eventCode, null, _eventOptions, SendOptions.SendReliable);

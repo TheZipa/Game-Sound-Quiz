@@ -1,8 +1,10 @@
 ﻿using System;
-using GameSoundQuiz.Core.UI.Base;
+
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+
+using GameSoundQuiz.Core.UI.Base;
 
 namespace GameSoundQuiz.Core.UI.Rooms
 {

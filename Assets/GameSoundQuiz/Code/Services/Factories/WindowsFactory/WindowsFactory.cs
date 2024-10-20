@@ -46,19 +46,19 @@ namespace GameSoundQuiz.Services.WindowsFactory
             _persistentCanvas.name = "PersistentCanvas";
             Object.DontDestroyOnLoad(_persistentCanvas);
         }
-        
+
+        public TWindow CreateWindow<TWindow>(Transform parent) where TWindow : BaseWindow
+        {
+            TWindow windowPrefab = _assets.ProvidePrefab<TWindow>();
+            TWindow window = _objectResolver.Instantiate(windowPrefab, parent);
+
+            return window;
+        }
+
         public void Clear()
         {
             if(_sceneCanvas is not null) Object.Destroy(_sceneCanvas);
             _sceneCanvas = null;
-        }
-
-        private TWindow CreateWindow<TWindow>(Transform canvas) where TWindow : BaseWindow
-        {
-            TWindow windowPrefab = _assets.ProvidePrefab<TWindow>();
-            TWindow window = _objectResolver.Instantiate(windowPrefab, canvas);
-
-            return window;
         }
     }
 }

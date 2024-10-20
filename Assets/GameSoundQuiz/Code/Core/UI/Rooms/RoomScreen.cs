@@ -1,9 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using GameSoundQuiz.Core.UI.Base;
-using GameSoundQuiz.Services.Multiplayer;
+
+using VContainer;
 using UnityEngine;
 using UnityEngine.UI;
+
+using GameSoundQuiz.Core.UI.Base;
+using GameSoundQuiz.Services.Multiplayer;
+using GameSoundQuiz.Services.StaticData;
+using GameSoundQuiz.Services.WindowsFactory;
 using PhotonPlayer = Photon.Realtime.Player;
 
 namespace GameSoundQuiz.Core.UI.Rooms
@@ -13,7 +18,7 @@ namespace GameSoundQuiz.Core.UI.Rooms
         public event Action OnRoomLeft;
         public event Action OnStartGame;
         
-        public Transform PlayerFieldContent;
+        [SerializeField] private Transform _playerFieldContent;
         [SerializeField] private Button _leaveRoomButton;
         [SerializeField] private Button _startGameButton;
 
@@ -34,15 +39,17 @@ namespace GameSoundQuiz.Core.UI.Rooms
             });
         }
 
-        public void Construct(IMultiplayerRooms multiplayerRooms, Stack<RoomPlayerField> roomPlayerFields, 
-            int maxPlayers, int minPlayers)
+        [Inject]
+        public void Construct(IMultiplayerRooms multiplayerRooms, IWindowsFactory windowsFactory, IStaticData staticData)
         {
-            _roomPlayerFields = new Dictionary<string, RoomPlayerField>(maxPlayers);
-            _fields = roomPlayerFields;
+            _minPlayers = staticData.ApplicationConfig.MinPlayersInLobby;
+            int maxPlayersInLobby = staticData.ApplicationConfig.MaxPlayersInLobby;
+            _roomPlayerFields = new Dictionary<string, RoomPlayerField>(maxPlayersInLobby);
+            
+            _fields = CreateRoomPlayerFields(windowsFactory, maxPlayersInLobby);
             _multiplayerRooms = multiplayerRooms;
             _multiplayerRooms.OnPlayerRoomJoin += AddPlayerToRoom;
             _multiplayerRooms.OnPlayerRoomLeft += RemovePlayerFromRoom;
-            _minPlayers = minPlayers;
         }
 
         public void SetupRoom()
@@ -80,6 +87,18 @@ namespace GameSoundQuiz.Core.UI.Rooms
                 _fields.Push(playerField);
             }
             _roomPlayerFields.Clear();
+        }
+        
+        private Stack<RoomPlayerField> CreateRoomPlayerFields(IWindowsFactory windowsFactory, int maxPlayers)
+        {
+            Stack<RoomPlayerField> roomPlayerFields = new Stack<RoomPlayerField>(maxPlayers);
+            for (int i = 0; i < maxPlayers; i++)
+            {
+                RoomPlayerField roomPlayerField = windowsFactory.CreateWindow<RoomPlayerField>(_playerFieldContent);
+                roomPlayerField.Hide();
+                roomPlayerFields.Push(roomPlayerField);
+            }
+            return roomPlayerFields;
         }
 
         private void OnDestroy()

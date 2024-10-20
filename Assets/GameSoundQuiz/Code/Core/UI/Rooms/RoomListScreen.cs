@@ -1,12 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using GameSoundQuiz.Core.UI.Base;
-using GameSoundQuiz.Services.Multiplayer;
+
+using VContainer;
 using Photon.Realtime;
 using UnityEngine;
 using UnityEngine.Pool;
 using UnityEngine.UI;
+
+using GameSoundQuiz.Core.UI.Base;
+using GameSoundQuiz.Services.Multiplayer;
+using GameSoundQuiz.Services.WindowsFactory;
 
 namespace GameSoundQuiz.Core.UI.Rooms
 {
@@ -16,14 +20,14 @@ namespace GameSoundQuiz.Core.UI.Rooms
         public event Action<RoomInfo> OnRoomConnect;
         public event Action OnRoomCreateClick;
         
-        public Transform RoomsContent;
+        [SerializeField] Transform _roomsContent;
         [SerializeField] private Button _closeButton;
         [SerializeField] private Button _createRoomButton;
 
         private readonly Dictionary<string, RoomConnectField> _rooms = new(10);
+        
         private IMultiplayerRooms _multiplayerRooms;
         private IObjectPool<RoomConnectField> _roomFieldsPool;
-        private Coroutine _refreshRoomListRoutine;
 
         protected override void OnAwake()
         {
@@ -36,9 +40,10 @@ namespace GameSoundQuiz.Core.UI.Rooms
             });
         }
 
-        public void Construct(IMultiplayerRooms multiplayerRooms, IObjectPool<RoomConnectField> roomFieldsPool)
+        [Inject]
+        public void Construct(IMultiplayerRooms multiplayerRooms, IWindowsFactory windowsFactory)
         {
-            _roomFieldsPool = roomFieldsPool;
+            _roomFieldsPool = CreateRoomConnectPool(windowsFactory);
             _multiplayerRooms = multiplayerRooms;
             _multiplayerRooms.OnRoomsUpdated += RefreshRoomList;
         }
@@ -52,7 +57,11 @@ namespace GameSoundQuiz.Core.UI.Rooms
             }
             _rooms.Clear();
         }
-        
+
+        private IObjectPool<RoomConnectField> CreateRoomConnectPool(IWindowsFactory windowsFactory) =>
+            new ObjectPool<RoomConnectField>(() => windowsFactory.CreateWindow<RoomConnectField>(_roomsContent), 
+                roomField => roomField.Show(), roomField => roomField.Hide());
+
         private void RefreshRoomList(List<RoomInfo> roomInfos)
         {
             foreach (string roomName in _rooms.Keys.ToArray())

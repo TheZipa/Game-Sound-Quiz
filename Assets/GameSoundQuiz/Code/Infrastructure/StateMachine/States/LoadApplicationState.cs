@@ -41,6 +41,7 @@ namespace GameSoundQuiz.Infrastructure.StateMachine.States
         public void Enter()
         {
             _saveLoad.Load();
+            _staticData.LoadStaticData();
             _soundService.Construct(_saveLoad, _staticData.SoundData);
             
             CreatePersistentWindows();
@@ -62,6 +63,7 @@ namespace GameSoundQuiz.Infrastructure.StateMachine.States
 
             SettingsView settingsView = _windowsService.AddPersistentWindow<SettingsView>();
             HeaderView headerView = _windowsService.AddPersistentWindow<HeaderView>();
+            _windowsService.AddPersistentWindow<MessageBox>();
 
             headerView.OnSettingsClick += settingsView.Toggle;
         }

@@ -55,7 +55,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _canvasGroup: {fileID: 5717935921203080468}
   _fadeSpeed: 0.25
-  RoomsContent: {fileID: 6291056444496521595}
+  _roomsContent: {fileID: 6291056444496521595}
   _closeButton: {fileID: 1640098590286508235}
   _createRoomButton: {fileID: 2660869093497510065}
 --- !u!225 &5717935921203080468
@@ -249,7 +249,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.70101905, g: 0.6467604, b: 0.8113208, a: 1}
+  m_Color: {r: 0.4339623, g: 0.33775365, b: 0.36467174, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

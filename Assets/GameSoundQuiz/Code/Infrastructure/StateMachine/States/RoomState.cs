@@ -1,13 +1,15 @@
 using System.Threading.Tasks;
 
+using Photon.Pun;
+using Photon.Realtime;
+using ExitGames.Client.Photon;
+
+using GameSoundQuiz.Core.UI;
 using GameSoundQuiz.Core.UI.Rooms;
 using GameSoundQuiz.Services.LoadingCurtain;
 using GameSoundQuiz.Services.Multiplayer;
 using GameSoundQuiz.Services.StaticData;
-
-using Photon.Pun;
-using Photon.Realtime;
-using ExitGames.Client.Photon;
+using GameSoundQuiz.Services.Windows;
 
 namespace GameSoundQuiz.Infrastructure.StateMachine.States
 {
@@ -18,8 +20,9 @@ namespace GameSoundQuiz.Infrastructure.StateMachine.States
         private readonly IApplicationStateMachine _stateMachine;
         private readonly IMultiplayerRooms _multiplayerRooms;
         private readonly IMultiplayerCommon _multiplayerCommon;
-        private readonly IStaticData _staticData;
         private readonly ILoadingCurtain _loadingCurtain;
+        private readonly IWindowsService _windowsService;
+        private readonly IStaticData _staticData;
 
         private RoomListScreen _roomListScreen;
         private RoomScreen _roomScreen;
@@ -30,6 +33,7 @@ namespace GameSoundQuiz.Infrastructure.StateMachine.States
             IMultiplayerRooms multiplayerRooms,
             IMultiplayerCommon multiplayerCommon,
             ILoadingCurtain loadingCurtain,
+            IWindowsService windowsService,
             IStaticData staticData)
         {
             _stateMachine = stateMachine;
@@ -37,6 +41,7 @@ namespace GameSoundQuiz.Infrastructure.StateMachine.States
             _multiplayerCommon = multiplayerCommon;
             _staticData = staticData;
             _loadingCurtain = loadingCurtain;
+            _windowsService = windowsService;
         }
         
         public void Enter()
@@ -54,9 +59,9 @@ namespace GameSoundQuiz.Infrastructure.StateMachine.States
 
         private void CacheEntities()
         {
-            //_roomListScreen = _entityContainer.GetEntity<RoomListScreen>();
-            //_roomScreen = _entityContainer.GetEntity<RoomScreen>();
-            //_roomCreateScreen = _entityContainer.GetEntity<RoomCreateScreen>();
+            _roomListScreen = _windowsService.GetWindow<RoomListScreen>();
+            _roomScreen = _windowsService.GetWindow<RoomScreen>();
+            _roomCreateScreen = _windowsService.GetWindow<RoomCreateScreen>();
         }
 
         private void Subscribe()
@@ -89,7 +94,7 @@ namespace GameSoundQuiz.Infrastructure.StateMachine.States
         {
             await Task.Delay(1000);
             _loadingCurtain.Hide();
-            //_entityContainer.GetEntity<ErrorScreen>().ShowError(message);
+            _windowsService.GetWindow<MessageBox>().ShowError(message);
         }
 
         private void SwitchToRoomScreen()
@@ -125,6 +130,10 @@ namespace GameSoundQuiz.Infrastructure.StateMachine.States
             _loadingCurtain.Show();
         }
 
-        private void ReturnToMainMenu() => _stateMachine.Enter<MenuState>();
+        private void ReturnToMainMenu()
+        {
+            _loadingCurtain.Show();
+            _stateMachine.Enter<MenuState>();
+        }
     }
 }

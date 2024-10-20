@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8098f80597a24815b4369a33c41b2177, type: 3}
-  m_Name: Game Configuration
+  m_Name: Application Config
   m_EditorClassIdentifier: 
-  StartBalance: 100
-  DefaultSoundVolume: 0.4
+  MaxPlayersInLobby: 12
+  MinPlayersInLobby: 1
