@@ -1,3 +1,4 @@
+using System;
 using GameSoundQuiz.Core.UI.Base;
 using TMPro;
 using UnityEngine;
@@ -7,14 +8,33 @@ namespace GameSoundQuiz.Core.UI.Rooms
 {
     public class RoomPlayerField : BaseWindow
     {
+        public event Action<RoomPlayerField> OnAdditionalMenuToggled;
+        public event Action OnSetMasterButtonClick;
+        
         [SerializeField] private Image _personIcon;
         [SerializeField] private TextMeshProUGUI _playerName;
+        [SerializeField] private GameObject _additionalMenuView;
+        [SerializeField] private Button _additionalMenuButton;
+        [SerializeField] private Button _setMasterButton;
 
-        public void ShowAndSetup(string playerName, bool isMaster)
+        private void Awake()
+        {
+            _additionalMenuButton.onClick.AddListener(ToggleAdditionalMenu);
+            _setMasterButton.onClick.AddListener(() => OnSetMasterButtonClick?.Invoke());
+        }
+
+        public void ShowAndSetup(string playerName)
         {
             _playerName.text = playerName;
-            _personIcon.gameObject.SetActive(isMaster);
             Show();
-        } 
+        }
+
+        public void HideAdditionalMenu() => _additionalMenuView.SetActive(false);
+
+        private void ToggleAdditionalMenu()
+        {
+            _additionalMenuView.SetActive(!_additionalMenuView.activeSelf);
+            OnAdditionalMenuToggled?.Invoke(this);
+        }
     }
 }

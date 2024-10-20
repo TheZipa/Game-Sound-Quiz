@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using ExitGames.Client.Photon;
 using Photon.Pun;
 using Photon.Realtime;
@@ -14,9 +15,10 @@ namespace GameSoundQuiz.Services.Multiplayer
         public event Action OnRoomJoined;
         public event Action OnConnectingSuccess;
         
-        public event Action<string> OnRoomJoinFailed;
+        public event Action<int, string> OnRoomJoinFailed;
         public event Action<Player> OnPlayerRoomJoin;
         public event Action<Player> OnPlayerRoomLeft;
+        public event Action<Player> OnMasterPlayerChanged;
         public event Action<DisconnectCause> OnConnectionClosed;
         public event Action<List<RoomInfo>> OnRoomsUpdated;
         
@@ -34,10 +36,19 @@ namespace GameSoundQuiz.Services.Multiplayer
 
         public void SetNickname(string nickname) => PhotonNetwork.NickName = nickname;
 
+        public void SetMasterPlayer(string playerNickname)
+        {
+            Player[] playersInRoom = GetPlayersInRoom();
+            if (playersInRoom.Length is 0 || String.IsNullOrWhiteSpace(playerNickname)) return;
+
+            Player player = playersInRoom.First(v => v.NickName == playerNickname);
+            PhotonNetwork.SetMasterClient(player);
+        }
+
         public void JoinToRoom(string roomName)
         {
-            if (!PhotonNetwork.IsConnected) OnRoomJoinFailed?.Invoke("You are not connected");
-            else if (PhotonNetwork.NetworkClientState != ClientState.JoinedLobby) OnRoomJoinFailed?.Invoke("Wrong client state");
+            if (!PhotonNetwork.IsConnected) OnRoomJoinFailed?.Invoke(-1, "You are not connected");
+            else if (PhotonNetwork.NetworkClientState != ClientState.JoinedLobby) OnRoomJoinFailed?.Invoke(-1, "Wrong client state");
             else PhotonNetwork.JoinRoom(roomName);
         }
 
@@ -57,7 +68,7 @@ namespace GameSoundQuiz.Services.Multiplayer
 
         public int GetCurrentPlayerId() => PhotonNetwork.LocalPlayer.ActorNumber;
 
-        public void LeaveRoom() => PhotonNetwork.LeaveRoom(false);
+        public void LeaveRoom() => PhotonNetwork.LeaveRoom();
 
         public void SendEvent(byte eventCode) => PhotonNetwork
             .RaiseEvent(eventCode, null, _eventOptions, SendOptions.SendReliable);
@@ -72,9 +83,11 @@ namespace GameSoundQuiz.Services.Multiplayer
 
         public override void OnPlayerEnteredRoom(Player newPlayer) => OnPlayerRoomJoin?.Invoke(newPlayer);
 
+        public override void OnMasterClientSwitched(Player newMasterClient) => OnMasterPlayerChanged?.Invoke(newMasterClient);
+
         public override void OnPlayerLeftRoom(Player otherPlayer) => OnPlayerRoomLeft?.Invoke(otherPlayer);
 
-        public override void OnJoinRoomFailed(short returnCode, string message) => OnRoomJoinFailed?.Invoke(message);
+        public override void OnJoinRoomFailed(short returnCode, string message) => OnRoomJoinFailed?.Invoke(returnCode, message);
 
         public override void OnRoomListUpdate(List<RoomInfo> roomList) => OnRoomsUpdated?.Invoke(roomList);
     }

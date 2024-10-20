@@ -90,7 +90,7 @@ namespace GameSoundQuiz.Infrastructure.StateMachine.States
             _roomCreateScreen.OnRoomCreated -= CreateNewRoom;
         }
 
-        private async void DisplayRoomJoinFail(string message)
+        private async void DisplayRoomJoinFail(int requestCode, string message)
         {
             await Task.Delay(1000);
             _loadingCurtain.Hide();

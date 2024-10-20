@@ -7,7 +7,7 @@ namespace GameSoundQuiz.Services.Multiplayer
     public interface IMultiplayerRooms
     {
         event Action OnRoomJoined;
-        event Action<string> OnRoomJoinFailed;
+        event Action<int, string> OnRoomJoinFailed;
         event Action<Player> OnPlayerRoomJoin;
         event Action<Player> OnPlayerRoomLeft;
         event Action<List<RoomInfo>> OnRoomsUpdated;
@@ -16,6 +16,7 @@ namespace GameSoundQuiz.Services.Multiplayer
         Player[] GetPlayersInRoom();
         bool IsMasterPlayer();
         void LeaveRoom();
-        void OnJoinRoomFailed(short returnCode, string message);
+        event Action<Player> OnMasterPlayerChanged;
+        void SetMasterPlayer(string playerNickname);
     }
 }

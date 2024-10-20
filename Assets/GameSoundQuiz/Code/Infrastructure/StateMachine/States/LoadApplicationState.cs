@@ -1,6 +1,5 @@
 using GameSoundQuiz.Core.UI;
 using GameSoundQuiz.Core.UI.Settings;
-using GameSoundQuiz.Services.LoadingCurtain;
 using GameSoundQuiz.Services.Multiplayer;
 using GameSoundQuiz.Services.SaveLoad;
 using GameSoundQuiz.Services.Sound;
